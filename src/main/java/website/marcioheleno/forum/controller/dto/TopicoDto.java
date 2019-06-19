@@ -1,6 +1,5 @@
 package website.marcioheleno.forum.controller.dto;
 
-import lombok.Data;
 import lombok.Getter;
 import website.marcioheleno.forum.model.Topico;
 
@@ -8,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
+@Getter
 public class TopicoDto {
 
     private Long id;

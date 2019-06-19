@@ -1,21 +1,61 @@
 package website.marcioheleno.forum.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
+import website.marcioheleno.forum.controller.dto.DetalhesDoTopicoDto;
+import website.marcioheleno.forum.repository.CursoRepository;
+import website.marcioheleno.forum.repository.TopicoRepository;
 import website.marcioheleno.forum.controller.dto.TopicoDto;
-import website.marcioheleno.forum.model.Curso;
+import website.marcioheleno.forum.controller.dto.TopicoForm;
 import website.marcioheleno.forum.model.Topico;
 
-import java.util.Arrays;
+import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/topicos")
 public class TopicosController {
 
-    @RequestMapping("/topicos")
-    public List<TopicoDto> lista(){
-        Topico topico = new Topico("Dúvida de Java", "Dúvida do Sring boot", new Curso("Spring", "Programação"));
-        return TopicoDto.converter(Arrays.asList(topico, topico, topico));
+    @Autowired
+    private TopicoRepository topicoRepository;
+
+    @Autowired
+    private CursoRepository cursoRepository;
+
+    @GetMapping
+    public List<TopicoDto> lista(String nomeCurso){
+
+        List<Topico> topicos;
+
+        if (nomeCurso == null) {
+            topicos = topicoRepository.findAll();
+        } else {
+            topicos = topicoRepository.findByCursoNome(nomeCurso);
+        }
+        return TopicoDto.converter(topicos);
+    }
+
+    @PostMapping
+    public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm topicoForm, UriComponentsBuilder uriBuilder) {
+        // parametro via body
+        Topico topico = topicoForm.converter(cursoRepository);
+        topicoRepository.save(topico);
+        URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(new TopicoDto(topico));
+
+    }
+
+    @GetMapping("/{id}")
+    public DetalhesDoTopicoDto detalhar(@PathVariable Long id) {
+        Topico topico = topicoRepository.getOne(id);
+//        return new TopicoDto(topico);
+        return new DetalhesDoTopicoDto(topico);
     }
 
 }

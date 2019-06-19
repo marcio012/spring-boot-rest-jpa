@@ -11,6 +11,7 @@ import javax.persistence.Id;
 @Getter
 @Setter
 @EqualsAndHashCode
+@NoArgsConstructor
 @Entity
 public class Usuario {
 
