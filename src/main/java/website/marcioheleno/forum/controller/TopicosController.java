@@ -1,5 +1,6 @@
 package website.marcioheleno.forum.controller;
 
+import jdk.nashorn.internal.runtime.options.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/topicos")
@@ -54,24 +56,37 @@ public class TopicosController {
     }
 
     @GetMapping("/{id}")
-    public DetalhesDoTopicoDto detalhar(@PathVariable Long id) {
-        Topico topico = topicoRepository.getOne(id);
-        return new DetalhesDoTopicoDto(topico);
+    public ResponseEntity<DetalhesDoTopicoDto> detalhar(@PathVariable Long id) {
+        Optional<Topico> topicoOptional = topicoRepository.findById(id);
+        if (topicoOptional.isPresent()) {
+            return ResponseEntity.ok(new DetalhesDoTopicoDto(topicoOptional.get()));
+        }
+        return ResponseEntity.notFound().build();
+
     }
 
     @PutMapping("/{id}")
     @Transactional
     public ResponseEntity<TopicoDto> atualiza(@PathVariable Long id, @RequestBody @Valid AtualizaTopicoForm form) {
-        Topico topico = form.atualizar(id, topicoRepository);
-
-        return ResponseEntity.ok(new TopicoDto(topico));
+        Optional<Topico> topicoOptional = topicoRepository.findById(id);
+        if (topicoOptional.isPresent()) {
+            Topico topicoAtualizado = form.atualizar(id, topicoRepository);
+            return ResponseEntity.ok(new TopicoDto(topicoAtualizado));
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity remover(@PathVariable Long id) {
-        topicoRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        Optional<Topico> topicoOptional = topicoRepository.findById(id);
+
+        if (topicoOptional.isPresent()) {
+            topicoRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
 }
