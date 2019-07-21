@@ -1,19 +1,17 @@
 package website.marcioheleno.forum.controller;
 
-import jdk.nashorn.internal.runtime.options.Option;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 import website.marcioheleno.forum.controller.dto.AtualizaTopicoForm;
 import website.marcioheleno.forum.controller.dto.DetalhesDoTopicoDto;
-import website.marcioheleno.forum.repository.CursoRepository;
-import website.marcioheleno.forum.repository.TopicoRepository;
 import website.marcioheleno.forum.controller.dto.TopicoDto;
 import website.marcioheleno.forum.controller.dto.TopicoForm;
+import website.marcioheleno.forum.model.Curso;
 import website.marcioheleno.forum.model.Topico;
+import website.marcioheleno.forum.repository.CursoRepository;
+import website.marcioheleno.forum.repository.TopicoRepository;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -32,7 +30,8 @@ public class TopicosController {
     private CursoRepository cursoRepository;
 
     @GetMapping
-    public List<TopicoDto> lista(String nomeCurso){
+    public List<TopicoDto> lista(@RequestParam(required = false) String nomeCurso,
+                                 @RequestParam int pagina, @RequestParam int quantidade){
 
         List<Topico> topicos;
 

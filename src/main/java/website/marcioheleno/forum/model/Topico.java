@@ -2,6 +2,7 @@ package website.marcioheleno.forum.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -11,8 +12,8 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode
 @Entity
-@AllArgsConstructor
 public class Topico {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
